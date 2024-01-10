@@ -1,9 +1,8 @@
 #include "math.h"
 #include "Arduino.h"
-#include "CustomLCD.h"
 #include "menuDisplay.h"
 
-menuDisplay MenuDisplay(1, 0);
+menuDisplay MenuDisplay;
 
 struct data_Button
 {
@@ -54,31 +53,24 @@ int calculator_Value_Butt(int changMun)
   return Data_Button.BIN_Total;
 }
 
-
-
-void downline()
-{
-  for (byte downLine{0}; downLine <= 255; ++downLine)
-  {
-    Serial.println("\n");
-  }
-}
-
 void manualButton()
 {
   switch (Data_Button.BIN_Total)
   {
   case 1:
-    // Serial.println("MODE:");
+    Serial.println("MODE:");
+    Data_Button.modeMun += 1;
+    MenuDisplay.menuShowAll(1, Data_Button.modeMun);
+    Data_Button.modeMun == 4 ? Data_Button.modeMun = 0 : Data_Button.modeMun = Data_Button.modeMun;
     break;
   case 10:
-    // Serial.println("UP:");
+    Serial.println("UP:");
     break;
   case 100:
-    // Serial.println("DOWN:");
+    Serial.println("DOWN:");
     break;
   case 1000:
-    // Serial.println("SET:");
+    Serial.println("SET:");
     break;
 
   default:
