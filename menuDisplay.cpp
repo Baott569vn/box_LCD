@@ -1,8 +1,8 @@
 #include "menuDisplay.h"
-#include <stdint.h> // Để sử dụng uint8_t
+#include "Arduino.h"
 #include <Wire.h>
 #include <LiquidCrystal_I2C.h>
-#include "Arduino.h"
+#include "customCharacters.h"
 
 // Địa chỉ và kích thước của màn hình LCD I2C
 #define I2C_ADDR 0x27
@@ -17,6 +17,18 @@ menuDisplay::menuDisplay()
 {
 }
 
+byte menuDisplay::_select_User()
+{
+    byte select_User = (sizeof(_LCD_Arduino.select_User) / sizeof(_LCD_Arduino.select_User[0])) - 3;
+    return select_User;
+}
+
+byte menuDisplay::_select_Mode()
+{
+    byte select_Mode = (sizeof(_LCD_Arduino.select_Mode) / sizeof(_LCD_Arduino.select_Mode[0])) - 3;
+    return select_Mode;
+}
+
 // Hàm khởi tạo LCD và hiển thị màn hình khởi động
 void menuDisplay::begin()
 {
@@ -24,9 +36,9 @@ void menuDisplay::begin()
     lcd.backlight();
 
     // Tải ký tự tại địa chỉ 0 và 1 từ thư viện
-    for (int characterMax{0}; characterMax < sizeof(customCharacters) / sizeof(customCharacters[0]); characterMax++)
+    for (int characterMax = 0; characterMax < sizeof(Characters) / sizeof(Characters[0]); characterMax++)
     {
-        lcd.createChar(characterMax, (uint8_t *)customCharacters[characterMax]);
+        lcd.createChar(characterMax, (uint8_t *)Characters[characterMax]);
     }
 
     // Màn hình khởi động
@@ -67,13 +79,13 @@ void menuDisplay::begin()
 // Hiển thị tất cả các menu dựa trên chủ đề và chế độ
 void menuDisplay::menuShowAll(byte munberTheme, byte selectMode)
 {
-    _LCD_Arduino._munberTheme = munberTheme;
-    _LCD_Arduino.selectMode = selectMode;
-
-    switch (_LCD_Arduino._munberTheme)
+    switch (munberTheme)
     {
     case 1:
-        menuShow1(_LCD_Arduino.selectMode);
+        menuShow1(selectMode);
+        break;
+    case 2:
+        menuShow2(selectMode);
         break;
     default:
         break;
@@ -85,7 +97,7 @@ void menuDisplay::menuShow1(byte selec)
 {
     lcd.clear();
     lcd.setCursor(0, 0);
-    lcd.println(_LCD_Arduino.select_User[0]);
+    lcd.print(_LCD_Arduino.select_User[0]);
 
     switch (selec)
     {
@@ -104,6 +116,50 @@ void menuDisplay::menuShow1(byte selec)
     case 4:
         lcd.setCursor(8, 0);
         lcd.print(_LCD_Arduino.select_Mode[3]);
+        break;
+    default:
+        break;
+    }
+}
+
+// Hiển thị menu 1 dựa trên lựa chọn
+void menuDisplay::menuShow2(byte selec)
+{
+    lcd.clear();
+    lcd.setCursor(0, 0);
+    lcd.print(_LCD_Arduino.select_User[0]);
+
+    switch (selec)
+    {
+    case 1:
+        lcd.setCursor(8, 0);
+        lcd.print(_LCD_Arduino.select_User[2]); // Mode_Bas
+        lcd.setCursor(15, 1);
+        lcd.write(1);
+        break;
+    case 2:
+        lcd.setCursor(8, 0);
+        lcd.print(_LCD_Arduino.select_User[3]); // Faker
+        lcd.setCursor(15, 1);
+        lcd.write(8);
+        break;
+    case 3:
+        lcd.setCursor(8, 0);
+        lcd.print(_LCD_Arduino.select_User[4]); //Attach
+        lcd.setCursor(15, 1);
+        lcd.write(5);
+        break;
+    case 4:
+        lcd.setCursor(8, 0);
+        lcd.print(_LCD_Arduino.select_User[5]); //Wireless
+        lcd.setCursor(15, 1);
+        lcd.write(7);
+        break;
+    case 5:
+        lcd.setCursor(8, 0);
+        lcd.print(_LCD_Arduino.select_User[6]); //About
+        lcd.setCursor(15, 1);
+        lcd.write(6);
         break;
     default:
         break;
